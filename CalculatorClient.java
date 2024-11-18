@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 public class CalculatorClient extends JFrame {
     private JTextField displayField;
     private Calculator calculator; // Objeto remoto RMI
+    private double memory = 0; // Memória local para armazenar o valor
 
     public CalculatorClient() {
         setTitle("Calculadora");
@@ -48,7 +49,6 @@ public class CalculatorClient extends JFrame {
         for (String text : buttons) {
             JButton button = createStyledButton(text);
             buttonPanel.add(button);
-
             button.addActionListener(e -> onButtonPressed(e));
         }
 
@@ -93,6 +93,21 @@ public class CalculatorClient extends JFrame {
                 case "C":
                     displayField.setText("");
                     break;
+                case "MC":
+                    memory = 0; // Limpa a memória
+                    break;
+                case "MR":
+                    displayField.setText(String.valueOf(memory)); // Exibe o valor da memória
+                    break;
+                case "M+":
+                    memory += Double.parseDouble(displayField.getText()); // Adiciona ao valor da memória
+                    break;
+                case "M-":
+                    memory -= Double.parseDouble(displayField.getText()); // Subtrai do valor da memória
+                    break;
+                case "CE":
+                    displayField.setText(""); // Limpa a entrada sem afetar a memória
+                    break;
                 case "=":
                     String[] tokens = displayField.getText().split(" ");
                     if (tokens.length == 3) {
@@ -100,13 +115,21 @@ public class CalculatorClient extends JFrame {
                         String operator = tokens[1];
                         double num2 = Double.parseDouble(tokens[2]);
 
-                        double result = switch (operator) {
-                            case "+" -> calculator.add(num1, num2);
-                            case "-" -> calculator.subtract(num1, num2);
-                            case "*" -> calculator.multiply(num1, num2);
-                            case "/" -> calculator.divide(num1, num2);
-                            default -> throw new IllegalArgumentException("Operador inválido");
-                        };
+                        double result = 0;
+                        switch (operator) {
+                            case "+":
+                                result = calculator.add(num1, num2);
+                                break;
+                            case "-":
+                                result = calculator.subtract(num1, num2);
+                                break;
+                            case "*":
+                                result = calculator.multiply(num1, num2);
+                                break;
+                            case "/":
+                                result = calculator.divide(num1, num2);
+                                break;
+                        }
 
                         displayField.setText(String.valueOf(result));
                     }
@@ -116,6 +139,15 @@ public class CalculatorClient extends JFrame {
                 case "*":
                 case "/":
                     displayField.setText(displayField.getText() + " " + command + " ");
+                    break;
+                case "√":
+                    double num = Double.parseDouble(displayField.getText());
+                    double sqrtResult = calculator.squareRoot(num); // Chama a operação de raiz quadrada do servidor
+                    displayField.setText(String.valueOf(sqrtResult));
+                    break;
+                case "+/-":
+                    double numToNegate = Double.parseDouble(displayField.getText());
+                    displayField.setText(String.valueOf(calculator.negate(numToNegate))); // Chama a operação de negação do servidor
                     break;
                 default:
                     displayField.setText(displayField.getText() + command);
