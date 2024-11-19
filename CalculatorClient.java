@@ -16,7 +16,7 @@ public class CalculatorClient extends JFrame {
 
         // Conectar ao servidor RMI
         try {
-            calculator = (Calculator) java.rmi.Naming.lookup("rmi://192.168.165.206/CalculatorService");
+            calculator = (Calculator) java.rmi.Naming.lookup("rmi://192.168.2.101/CalculatorService");
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Erro ao conectar ao servidor RMI", "Erro", JOptionPane.ERROR_MESSAGE);
             System.exit(1);
